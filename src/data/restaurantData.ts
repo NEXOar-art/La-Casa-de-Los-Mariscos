@@ -53,43 +53,43 @@ export interface RestaurantInfo {
 }
 
 export const HERO_BACKGROUND_IMAGE =
-  '/assets/aistudio/CASA_DE_MARISCOS_6db247f6.jpg';
+  './assets/aistudio/CASA_DE_MARISCOS_6db247f6.jpg';
 
 export const RESERVATION_IMAGE =
-  '/src/assets/images/hero_casa_mariscos_madera_1795139201376.jpg';
+  './src/assets/images/hero_casa_mariscos_madera_1795139201376.jpg';
 
 export const GALLERY_PHOTOS: GalleryPhoto[] = [
   {
     id: 'gal-1',
-    src: '/src/assets/images/gallery_paella_mariscos_1795134333589.jpg',
+    src: './src/assets/images/gallery_paella_mariscos_1795134333589.jpg',
     title: 'Paella de Mariscos del Canal',
     caption: 'Langostinos, mejillones, calamares y arroz al azafrán preparado al momento.',
     category: 'Arroces y Paellas',
   },
   {
     id: 'gal-2',
-    src: '/src/assets/images/gallery_pulpo_brasa_1795134333621.jpg',
+    src: './src/assets/images/gallery_pulpo_brasa_1795134333621.jpg',
     title: 'Pulpo Español a la Brasa',
     caption: 'Tentáculo sellado al fuego sobre espuma tibia de papa y pimentón.',
     category: 'Pescados a la Brasa',
   },
   {
     id: 'gal-3',
-    src: '/src/assets/images/gallery_tiradito_salmon_1795134333923.jpg',
+    src: './src/assets/images/gallery_tiradito_salmon_1795134333923.jpg',
     title: 'Tiradito de Pesca Blanca y Salmón',
     caption: 'Láminas frescas curadas al momento en leche de tigre cítrica y maíz cancha.',
     category: 'Crudos y Tiraditos',
   },
   {
     id: 'gal-4',
-    src: '/src/assets/images/hero_casa_mariscos_madera_1795139201376.jpg',
+    src: './src/assets/images/hero_casa_mariscos_madera_1795139201376.jpg',
     title: 'Nuestro Salón de Madera y Mesas Tradicionales',
     caption: 'Ambiente cálido fueguino con mesas y sillas de madera maciza en el corazón de Ushuaia.',
     category: 'El Salón',
   },
   {
     id: 'gal-5',
-    src: '/src/assets/images/gallery_cazuela_mar_1795134334145.jpg',
+    src: './src/assets/images/gallery_cazuela_mar_1795134334145.jpg',
     title: 'Cazuela Patagónica de Mariscos',
     caption: 'Vieiras, centolla, langostinos, mejillones y pesca del día en caldo caliente con pan tostado.',
     category: 'Cazuelas y Pastas',

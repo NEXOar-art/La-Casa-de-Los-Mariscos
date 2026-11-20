@@ -88,19 +88,14 @@ function projectZipPlugin(): Plugin {
 }
 
 export default defineConfig(() => {
-  const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1];
-  const base =
-    process.env.GITHUB_ACTIONS && repoName ? `/${repoName}/` : './';
-
   return {
-    base,
+    base: './',
     plugins: [
       react(),
       tailwindcss(),
       projectZipPlugin(),
-      // Copies src/assets into dist/ so root-relative URLs like
-      // "/src/assets/images/..." (e.g. generate_image output) still resolve
-      // in production builds. Do not remove.
+      // Copies src/assets into dist/ and mirrors dist/ into docs/ for GitHub Pages.
+      // Do not remove.
       {
         name: 'copy-unbundled-src-assets',
         apply: 'build',
@@ -113,6 +108,11 @@ export default defineConfig(() => {
           const distAssets = path.resolve(distDir, 'src/assets');
           if (fs.existsSync(distDir) && fs.existsSync(srcAssets)) {
             fs.cpSync(srcAssets, distAssets, {recursive: true, force: true});
+          }
+          const docsDir = path.resolve(__dirname, 'docs');
+          if (fs.existsSync(distDir)) {
+            fs.rmSync(docsDir, {recursive: true, force: true});
+            fs.cpSync(distDir, docsDir, {recursive: true, force: true});
           }
         },
       },

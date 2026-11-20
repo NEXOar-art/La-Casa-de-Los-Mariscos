@@ -34,7 +34,7 @@ export function GallerySection() {
   return (
     <section
       id="galeria"
-      className="relative z-10 border-t border-[#E5D8D2] bg-[#FBF8F5]/90 py-20 sm:py-24"
+      className="relative z-10 scroll-mt-16 border-t border-[#E5D8D2] bg-[#FBF8F5]/90 py-20 sm:py-24"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

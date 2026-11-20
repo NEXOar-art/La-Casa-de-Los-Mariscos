@@ -49,11 +49,15 @@ export function ReservationSection({ info }: ReservationSectionProps) {
       return;
     }
 
+    const [year, month, day] = date.split('-');
+    const formattedDate =
+      year && month && day ? `${day}/${month}/${year}` : date;
+
     const lines = [
       `Hola *${info.name}*, quiero solicitar una reserva:`,
       `• *Nombre:* ${name.trim()}`,
       `• *Personas:* ${numGuests}`,
-      `• *Fecha:* ${date}`,
+      `• *Fecha:* ${formattedDate}`,
       `• *Hora:* ${time} hs`,
     ];
     if (email.trim()) {
@@ -83,7 +87,7 @@ export function ReservationSection({ info }: ReservationSectionProps) {
   return (
     <section
       id="reservas"
-      className="relative z-10 border-t border-[#E5D8D2] bg-[#FBF8F5]/92 py-20 sm:py-24"
+      className="relative z-10 scroll-mt-16 border-t border-[#E5D8D2] bg-[#FBF8F5]/92 py-20 sm:py-24"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">

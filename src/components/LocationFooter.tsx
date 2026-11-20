@@ -28,7 +28,7 @@ export function LocationFooter({
   return (
     <footer
       id="ubicacion"
-      className="relative z-10 border-t border-[#D6E2E5] bg-[#EDF3F4] pt-20 pb-12"
+      className="relative z-10 scroll-mt-16 border-t border-[#D6E2E5] bg-[#EDF3F4] pt-20 pb-12"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Location & Interactive Map Split */}

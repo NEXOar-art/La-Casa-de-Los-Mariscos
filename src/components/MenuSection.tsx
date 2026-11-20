@@ -28,6 +28,13 @@ interface MenuSectionProps {
   onResetMenu: () => void;
 }
 
+function normalizeText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
 export function MenuSection({
   items,
   cartQuantities,
@@ -47,17 +54,17 @@ export function MenuSection({
   const [draftPrices, setDraftPrices] = useState<Record<string, string>>({});
 
   const filteredItems = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = normalizeText(searchQuery.trim());
     return items.filter((item) => {
       const matchesCategory =
         selectedCategory === 'Todas' || item.category === selectedCategory;
       if (!matchesCategory) return false;
       if (!q) return true;
       return (
-        item.name.toLowerCase().includes(q) ||
-        item.description.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q) ||
-        (item.tag && item.tag.toLowerCase().includes(q))
+        normalizeText(item.name).includes(q) ||
+        normalizeText(item.description).includes(q) ||
+        normalizeText(item.category).includes(q) ||
+        (item.tag && normalizeText(item.tag).includes(q))
       );
     });
   }, [items, selectedCategory, searchQuery]);
@@ -87,7 +94,7 @@ export function MenuSection({
       [item.id]: rawValue,
     }));
     const parsed = Number(rawValue.replace(/[^\d]/g, ''));
-    if (!Number.isNaN(parsed) && parsed >= 100) {
+    if (!Number.isNaN(parsed) && parsed > 0) {
       onUpdatePrice(item.id, parsed);
     }
   };
@@ -114,7 +121,7 @@ export function MenuSection({
   return (
     <section
       id="carta"
-      className="relative z-10 border-t border-[#E5D8D2] bg-[#F5ECE8]/90 py-20 sm:py-24"
+      className="relative z-10 scroll-mt-16 border-t border-[#E5D8D2] bg-[#F5ECE8]/90 py-20 sm:py-24"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Section Header + Admin Toggle */}
@@ -329,7 +336,7 @@ export function MenuSection({
                               <span>$</span>
                               <input
                                 type="number"
-                                min={100}
+                                min={1}
                                 step={100}
                                 value={draftValue}
                                 onChange={(e) =>

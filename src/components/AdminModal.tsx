@@ -1,5 +1,5 @@
-import { FormEvent, useEffect, useState } from 'react';
-import { Lock, Settings, X } from 'lucide-react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
+import { Download, Lock, Settings, X } from 'lucide-react';
 import { RestaurantInfo } from '../data/restaurantData';
 
 interface AdminModalProps {
@@ -23,15 +23,35 @@ export function AdminModal({
   const [error, setError] = useState('');
   const [formInfo, setFormInfo] = useState<RestaurantInfo>(info);
   const [savedNotice, setSavedNotice] = useState(false);
+  const [zipAvailable, setZipAvailable] = useState(false);
+  const wasOpenRef = useRef(false);
 
   useEffect(() => {
-    if (open) {
+    if (open && !wasOpenRef.current) {
       setFormInfo(info);
       setError('');
       setPin('');
       setSavedNotice(false);
     }
+    wasOpenRef.current = open;
   }, [open, info]);
+
+  useEffect(() => {
+    if (!open || !isAdmin) return;
+    let cancelled = false;
+    fetch('./__export-project.zip', { method: 'HEAD' })
+      .then((res) => {
+        if (cancelled) return;
+        const type = res.headers.get('content-type') || '';
+        setZipAvailable(res.ok && type.includes('application/zip'));
+      })
+      .catch(() => {
+        if (!cancelled) setZipAvailable(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, isAdmin]);
 
   useEffect(() => {
     if (!open) return;
@@ -253,20 +273,34 @@ export function AdminModal({
               </p>
             )}
 
-            <div className="flex justify-end gap-2.5 pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-lg border border-[#DECFC8] bg-white px-4 py-2 text-xs font-medium text-[#52606D] cursor-pointer"
-              >
-                Cerrar
-              </button>
-              <button
-                type="submit"
-                className="rounded-lg bg-[#B95347] px-5 py-2 text-xs font-semibold text-white hover:bg-[#9E4237] cursor-pointer"
-              >
-                Guardar datos
-              </button>
+            <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2">
+              {zipAvailable ? (
+                <a
+                  href="./__export-project.zip"
+                  download="la-casa-de-los-mariscos-completo.zip"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#DECFC8] bg-white px-3.5 py-2 text-xs font-semibold text-[#1F2A33] hover:border-[#B95347] hover:text-[#B95347]"
+                >
+                  <Download className="h-3.5 w-3.5 text-[#B95347]" aria-hidden="true" />
+                  <span>Descargar ZIP (Código + dist)</span>
+                </a>
+              ) : (
+                <span />
+              )}
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-lg border border-[#DECFC8] bg-white px-4 py-2 text-xs font-medium text-[#52606D] cursor-pointer"
+                >
+                  Cerrar
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-lg bg-[#B95347] px-5 py-2 text-xs font-semibold text-white hover:bg-[#9E4237] cursor-pointer"
+                >
+                  Guardar datos
+                </button>
+              </div>
             </div>
           </form>
         )}

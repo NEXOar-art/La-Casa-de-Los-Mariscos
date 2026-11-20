@@ -24,7 +24,23 @@ export default function App() {
       const saved = localStorage.getItem(STORAGE_MENU_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (
+          Array.isArray(parsed) &&
+          parsed.length > 0 &&
+          parsed.every(
+            (item) =>
+              item &&
+              typeof item === 'object' &&
+              typeof item.id === 'string' &&
+              typeof item.name === 'string' &&
+              typeof item.description === 'string' &&
+              typeof item.price === 'number' &&
+              Number.isFinite(item.price) &&
+              typeof item.category === 'string'
+          )
+        ) {
+          return parsed;
+        }
       }
     } catch {
       // ignore storage errors
@@ -36,7 +52,18 @@ export default function App() {
     try {
       const saved = localStorage.getItem(STORAGE_INFO_KEY);
       if (saved) {
-        return { ...DEFAULT_RESTAURANT_INFO, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          return {
+            ...DEFAULT_RESTAURANT_INFO,
+            ...parsed,
+            reviewCount:
+              typeof parsed.reviewCount === 'number' &&
+              Number.isFinite(parsed.reviewCount)
+                ? parsed.reviewCount
+                : DEFAULT_RESTAURANT_INFO.reviewCount,
+          };
+        }
       }
     } catch {
       // ignore storage errors

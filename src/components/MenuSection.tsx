@@ -81,6 +81,17 @@ export function MenuSection({
     }, 900);
   };
 
+  const handlePriceChange = (item: MenuItem, rawValue: string) => {
+    setDraftPrices((prev) => ({
+      ...prev,
+      [item.id]: rawValue,
+    }));
+    const parsed = Number(rawValue.replace(/[^\d]/g, ''));
+    if (!Number.isNaN(parsed) && parsed >= 100) {
+      onUpdatePrice(item.id, parsed);
+    }
+  };
+
   const handlePriceBlur = (item: MenuItem) => {
     const raw = draftPrices[item.id];
     if (raw === undefined) return;
@@ -127,7 +138,10 @@ export function MenuSection({
               <>
                 <button
                   type="button"
-                  onClick={onResetMenu}
+                  onClick={() => {
+                    setDraftPrices({});
+                    onResetMenu();
+                  }}
                   className="inline-flex items-center gap-2 rounded-lg border border-[#DECFC8] bg-white px-3.5 py-2 text-xs font-medium text-[#1F2A33] transition-colors hover:border-[#B95347] cursor-pointer"
                 >
                   <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
@@ -135,7 +149,10 @@ export function MenuSection({
                 </button>
                 <button
                   type="button"
-                  onClick={onExitAdmin}
+                  onClick={() => {
+                    setDraftPrices({});
+                    onExitAdmin();
+                  }}
                   className="inline-flex items-center gap-2 rounded-lg border border-[#B95347] bg-[#F9E3E0] px-3.5 py-2 text-xs font-semibold text-[#9E4237] cursor-pointer"
                 >
                   <Unlock className="h-3.5 w-3.5" aria-hidden="true" />
@@ -316,10 +333,7 @@ export function MenuSection({
                                 step={100}
                                 value={draftValue}
                                 onChange={(e) =>
-                                  setDraftPrices((prev) => ({
-                                    ...prev,
-                                    [item.id]: e.target.value,
-                                  }))
+                                  handlePriceChange(item, e.target.value)
                                 }
                                 onBlur={() => handlePriceBlur(item)}
                                 onKeyDown={(e) => {

@@ -6,31 +6,35 @@ interface HeroSectionProps {
   info: RestaurantInfo;
 }
 
-const HERO_SLIDES = [
-  {
-    kicker: 'Av. San Martín 232 · Ushuaia',
-    title: 'La Casa de los Mariscos',
-    detail:
-      'Más de cinco décadas sirviendo centolla fueguina fresca, cazuelas calientes y sabores del Canal Beagle en nuestro clásico salón de madera.',
-  },
-  {
-    kicker: 'Especialidad del Fin del Mundo',
-    title: 'Centolla Viva, Cazuelas y Paellas',
-    detail:
-      'Mariscos seleccionados cada día y platos abundantes preparados al momento en mesas tradicionales para compartir.',
-  },
-  {
-    kicker: 'Del Mar Patagónico a tu Mesa',
-    title: 'Merluza Negra, Pulpo y Pastas Marineras',
-    detail:
-      'Recetas emblemáticas de puerto junto a etiquetas australes en un ambiente cálido y familiar.',
-  },
-];
-
 export function HeroSection({ info }: HeroSectionProps) {
   const [slideIndex, setSlideIndex] = useState(0);
   const [titlesVisible, setTitlesVisible] = useState(true);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false
+  );
+
+  const slides = [
+    {
+      kicker: info.address,
+      title: info.name,
+      detail:
+        'Más de cinco décadas sirviendo centolla fueguina fresca, cazuelas calientes y sabores del Canal Beagle en nuestro clásico salón de madera.',
+    },
+    {
+      kicker: 'Especialidad del Fin del Mundo',
+      title: 'Centolla Viva, Cazuelas y Paellas',
+      detail:
+        'Mariscos seleccionados cada día y platos abundantes preparados al momento en mesas tradicionales para compartir.',
+    },
+    {
+      kicker: 'Del Mar Patagónico a tu Mesa',
+      title: 'Merluza Negra, Pulpo y Pastas Marineras',
+      detail:
+        'Recetas emblemáticas de puerto junto a etiquetas australes en un ambiente cálido y familiar.',
+    },
+  ];
 
   // 3 seconds visible, 3 seconds hidden so the hero local photo shines, then next slide
   useEffect(() => {
@@ -44,15 +48,15 @@ export function HeroSection({ info }: HeroSectionProps) {
         if (prevVisible) {
           return false;
         }
-        setSlideIndex((prevIdx) => (prevIdx + 1) % HERO_SLIDES.length);
+        setSlideIndex((prevIdx) => (prevIdx + 1) % slides.length);
         return true;
       });
     }, 3000);
 
     return () => window.clearInterval(timer);
-  }, [paused]);
+  }, [paused, slides.length]);
 
-  const activeSlide = HERO_SLIDES[slideIndex];
+  const activeSlide = slides[slideIndex];
 
   return (
     <section

@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import {
   CheckCircle2,
   Copy,
@@ -47,12 +47,25 @@ export function CartDrawer({
   const [orderMessage, setOrderMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  if (!open) return null;
-
   const total = entries.reduce(
     (sum, entry) => sum + entry.item.price * entry.quantity,
     0
   );
+
+  useEffect(() => {
+    setOrderMessage(null);
+  }, [total]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose]);
+
+  if (!open) return null;
 
   const handleCheckout = (e: FormEvent) => {
     e.preventDefault();
@@ -126,6 +139,9 @@ export function CartDrawer({
       role="dialog"
       aria-modal="true"
       aria-label="Carrito de compras"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
       className="fixed inset-0 z-50 flex justify-end bg-[#1F2A33]/60"
     >
       <div className="flex h-full w-full max-w-lg flex-col border-l border-[#E5D8D2] bg-[#FBF8F5] text-[#1F2A33] shadow-2xl">
@@ -268,7 +284,10 @@ export function CartDrawer({
                     type="text"
                     required
                     value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
+                    onChange={(e) => {
+                      setCustomerName(e.target.value);
+                      setOrderMessage(null);
+                    }}
                     placeholder="Ej: Sofía López"
                     className="w-full rounded-lg border border-[#DECFC8] bg-white px-3.5 py-2.5 text-sm text-[#1F2A33] placeholder-[#7B8794] focus:border-[#B95347] focus:outline-none"
                   />
@@ -283,6 +302,7 @@ export function CartDrawer({
                       type="button"
                       onClick={() => {
                         setMode('local');
+                        setError('');
                         setOrderMessage(null);
                       }}
                       className={`rounded-lg border px-2.5 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
@@ -297,6 +317,7 @@ export function CartDrawer({
                       type="button"
                       onClick={() => {
                         setMode('takeaway');
+                        setError('');
                         setOrderMessage(null);
                       }}
                       className={`rounded-lg border px-2.5 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
@@ -311,6 +332,7 @@ export function CartDrawer({
                       type="button"
                       onClick={() => {
                         setMode('delivery');
+                        setError('');
                         setOrderMessage(null);
                       }}
                       className={`rounded-lg border px-2.5 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
@@ -337,7 +359,10 @@ export function CartDrawer({
                       type="text"
                       required
                       value={tableNumber}
-                      onChange={(e) => setTableNumber(e.target.value)}
+                      onChange={(e) => {
+                        setTableNumber(e.target.value);
+                        setOrderMessage(null);
+                      }}
                       placeholder="Ej: Mesa 12 / Salón Principal"
                       className="w-full rounded-lg border border-[#DECFC8] bg-white px-3.5 py-2.5 text-sm text-[#1F2A33] placeholder-[#7B8794] focus:border-[#B95347] focus:outline-none"
                     />
@@ -357,7 +382,10 @@ export function CartDrawer({
                       type="text"
                       required
                       value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      onChange={(e) => {
+                        setDeliveryAddress(e.target.value);
+                        setOrderMessage(null);
+                      }}
                       placeholder="Calle, altura, piso / depto"
                       className="w-full rounded-lg border border-[#DECFC8] bg-white px-3.5 py-2.5 text-sm text-[#1F2A33] placeholder-[#7B8794] focus:border-[#B95347] focus:outline-none"
                     />
@@ -375,7 +403,10 @@ export function CartDrawer({
                     id="cart-notes"
                     type="text"
                     value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
+                    onChange={(e) => {
+                      setNotes(e.target.value);
+                      setOrderMessage(null);
+                    }}
                     placeholder="Ej: Sin picante, horario de retiro, cubiertos..."
                     className="w-full rounded-lg border border-[#DECFC8] bg-white px-3.5 py-2.5 text-sm text-[#1F2A33] placeholder-[#7B8794] focus:border-[#B95347] focus:outline-none"
                   />

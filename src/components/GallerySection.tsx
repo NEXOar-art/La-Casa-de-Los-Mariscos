@@ -126,6 +126,9 @@ export function GallerySection() {
           role="dialog"
           aria-modal="true"
           aria-label={GALLERY_PHOTOS[lightboxIdx].title}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setLightboxIdx(null);
+          }}
           className="fixed inset-0 z-50 flex items-center justify-center bg-[#1F2A33]/85 p-4"
         >
           <button
@@ -157,7 +160,7 @@ export function GallerySection() {
               referrerPolicy="no-referrer"
               className="max-h-[70vh] w-full object-cover"
             />
-            <div className="flex flex-col gap-1 border-t border-[#E5D8D2] p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 border-t border-[#E5D8D2] p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-xs font-semibold text-[#B95347]">
                   {GALLERY_PHOTOS[lightboxIdx].category}
@@ -169,9 +172,36 @@ export function GallerySection() {
                   {GALLERY_PHOTOS[lightboxIdx].caption}
                 </p>
               </div>
-              <span className="tabular-nums font-mono-num text-xs text-[#52606D] shrink-0">
-                {lightboxIdx + 1} / {GALLERY_PHOTOS.length}
-              </span>
+              <div className="flex items-center justify-between gap-3 shrink-0">
+                <div className="flex items-center gap-2 sm:hidden">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setLightboxIdx(
+                        (lightboxIdx - 1 + GALLERY_PHOTOS.length) %
+                          GALLERY_PHOTOS.length
+                      )
+                    }
+                    aria-label="Foto anterior"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#DECFC8] bg-white text-[#1F2A33] cursor-pointer"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setLightboxIdx((lightboxIdx + 1) % GALLERY_PHOTOS.length)
+                    }
+                    aria-label="Foto siguiente"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#DECFC8] bg-white text-[#1F2A33] cursor-pointer"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+                <span className="tabular-nums font-mono-num text-xs text-[#52606D] shrink-0">
+                  {lightboxIdx + 1} / {GALLERY_PHOTOS.length}
+                </span>
+              </div>
             </div>
           </div>
 

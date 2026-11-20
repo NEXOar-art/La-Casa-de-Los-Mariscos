@@ -58,9 +58,6 @@ export const HERO_BACKGROUND_IMAGE =
 export const RESERVATION_IMAGE =
   '/src/assets/images/hero_casa_mariscos_madera_1795139201376.jpg';
 
-export const LOCATION_IMAGE =
-  '/src/assets/images/gallery_cazuela_mar_1795134334145.jpg';
-
 export const GALLERY_PHOTOS: GalleryPhoto[] = [
   {
     id: 'gal-1',

@@ -17,6 +17,12 @@ export function ReservationSection({ info }: ReservationSectionProps) {
   const [submittedMsg, setSubmittedMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const now = new Date();
+  const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+    2,
+    '0'
+  )}-${String(now.getDate()).padStart(2, '0')}`;
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setError('');
@@ -32,6 +38,10 @@ export function ReservationSection({ info }: ReservationSectionProps) {
     }
     if (!date) {
       setError('Seleccioná la fecha de tu reserva.');
+      return;
+    }
+    if (date < todayIso) {
+      setError('La fecha de reserva no puede ser anterior a hoy.');
       return;
     }
     if (!time) {
@@ -104,7 +114,10 @@ export function ReservationSection({ info }: ReservationSectionProps) {
                     type="text"
                     required
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setSubmittedMsg(null);
+                    }}
                     placeholder="Ej: Martín Rodríguez"
                     className="w-full rounded-lg border border-[#DECFC8] bg-[#FBF8F5] px-3.5 py-2.5 text-sm text-[#1F2A33] placeholder-[#7B8794] focus:border-[#B95347] focus:outline-none"
                   />
@@ -126,7 +139,10 @@ export function ReservationSection({ info }: ReservationSectionProps) {
                       max={30}
                       required
                       value={guests}
-                      onChange={(e) => setGuests(e.target.value)}
+                      onChange={(e) => {
+                        setGuests(e.target.value);
+                        setSubmittedMsg(null);
+                      }}
                       className="w-full rounded-lg border border-[#DECFC8] bg-[#FBF8F5] px-3.5 py-2.5 font-mono-num text-sm text-[#1F2A33] focus:border-[#B95347] focus:outline-none"
                     />
                   </div>
@@ -142,9 +158,13 @@ export function ReservationSection({ info }: ReservationSectionProps) {
                     <input
                       id="res-date"
                       type="date"
+                      min={todayIso}
                       required
                       value={date}
-                      onChange={(e) => setDate(e.target.value)}
+                      onChange={(e) => {
+                        setDate(e.target.value);
+                        setSubmittedMsg(null);
+                      }}
                       className="w-full rounded-lg border border-[#DECFC8] bg-[#FBF8F5] px-3.5 py-2.5 text-sm text-[#1F2A33] focus:border-[#B95347] focus:outline-none [color-scheme:light]"
                     />
                   </div>
@@ -160,7 +180,10 @@ export function ReservationSection({ info }: ReservationSectionProps) {
                     <select
                       id="res-time"
                       value={time}
-                      onChange={(e) => setTime(e.target.value)}
+                      onChange={(e) => {
+                        setTime(e.target.value);
+                        setSubmittedMsg(null);
+                      }}
                       className="w-full rounded-lg border border-[#DECFC8] bg-[#FBF8F5] px-3.5 py-2.5 font-mono-num text-sm text-[#1F2A33] focus:border-[#B95347] focus:outline-none"
                     >
                       <option value="12:30">12:30 hs</option>
@@ -187,7 +210,10 @@ export function ReservationSection({ info }: ReservationSectionProps) {
                     id="res-email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setSubmittedMsg(null);
+                    }}
                     placeholder="tu@email.com"
                     className="w-full rounded-lg border border-[#DECFC8] bg-[#FBF8F5] px-3.5 py-2.5 text-sm text-[#1F2A33] placeholder-[#7B8794] focus:border-[#B95347] focus:outline-none"
                   />

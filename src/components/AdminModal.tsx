@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Lock, Settings, X } from 'lucide-react';
 import { RestaurantInfo } from '../data/restaurantData';
 
@@ -24,6 +24,24 @@ export function AdminModal({
   const [formInfo, setFormInfo] = useState<RestaurantInfo>(info);
   const [savedNotice, setSavedNotice] = useState(false);
 
+  useEffect(() => {
+    if (open) {
+      setFormInfo(info);
+      setError('');
+      setPin('');
+      setSavedNotice(false);
+    }
+  }, [open, info]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const handlePinSubmit = (e: FormEvent) => {
@@ -40,7 +58,34 @@ export function AdminModal({
 
   const handleInfoSave = (e: FormEvent) => {
     e.preventDefault();
-    onUpdateInfo(formInfo);
+    const cleanedName = formInfo.name.trim();
+    const cleanedWhatsapp = formInfo.whatsappNumber.replace(/[^\d]/g, '');
+    const cleanedAddress = formInfo.address.trim();
+
+    if (!cleanedName || !cleanedWhatsapp || !cleanedAddress) {
+      setError('Completá nombre del local, WhatsApp válido y dirección.');
+      return;
+    }
+
+    const rawHandle = formInfo.instagramHandle.trim().replace(/^@+/, '');
+    const normalizedHandle = rawHandle
+      ? `@${rawHandle}`
+      : info.instagramHandle;
+    const syncedInstagramUrl =
+      rawHandle && normalizedHandle !== info.instagramHandle
+        ? `https://www.instagram.com/${rawHandle}`
+        : formInfo.instagramUrl;
+
+    setError('');
+    onUpdateInfo({
+      ...formInfo,
+      name: cleanedName,
+      whatsappNumber: cleanedWhatsapp,
+      address: cleanedAddress,
+      instagramHandle: normalizedHandle,
+      instagramUrl: syncedInstagramUrl,
+      hours: formInfo.hours.trim() || info.hours,
+    });
     setSavedNotice(true);
     window.setTimeout(() => setSavedNotice(false), 2000);
   };
@@ -50,6 +95,9 @@ export function AdminModal({
       role="dialog"
       aria-modal="true"
       aria-label="Panel Administrador"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-[#1F2A33]/60 p-4"
     >
       <div className="w-full max-w-md rounded-xl border border-[#E5D8D2] bg-[#FBF8F5] p-6 text-[#1F2A33] shadow-2xl">
@@ -192,6 +240,12 @@ export function AdminModal({
                 className="w-full rounded-lg border border-[#DECFC8] bg-white px-3 py-2 text-sm text-[#1F2A33] focus:border-[#B95347] focus:outline-none"
               />
             </div>
+
+            {error && (
+              <p role="alert" className="text-xs font-semibold text-[#B91C1C]">
+                {error}
+              </p>
+            )}
 
             {savedNotice && (
               <p className="text-xs font-semibold text-[#1D7A5F]">

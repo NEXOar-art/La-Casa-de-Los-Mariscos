@@ -11,6 +11,19 @@ interface LocationMapProps {
 // Av. San Martín 232, Ushuaia, Tierra del Fuego, Argentina
 const USHUAIA_COORDS: [number, number] = [-54.8056, -68.3013];
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function safeExternalUrl(url: string): string {
+  return /^https?:\/\//i.test(url.trim()) ? escapeHtml(url.trim()) : '#';
+}
+
 export function LocationMap({ info }: LocationMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -45,10 +58,10 @@ export function LocationMap({ info }: LocationMapProps) {
     marker
       .bindPopup(
         `<div style="font-family:'Plus Jakarta Sans',sans-serif;min-width:195px;color:#1F2A33;">
-          <strong style="font-size:14px;display:block;margin-bottom:2px;color:#B95347;">${info.name}</strong>
-          <span style="font-size:12px;color:#334155;display:block;">${info.address}</span>
-          <span style="font-size:11px;color:#64748b;display:block;margin-top:4px;margin-bottom:8px;">${info.category} · ${info.priceRange}</span>
-          <a href="${info.googleMapsUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#B95347;color:#ffffff;font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;text-decoration:none;">Abrir ubicación en Maps</a>
+          <strong style="font-size:14px;display:block;margin-bottom:2px;color:#B95347;">${escapeHtml(info.name)}</strong>
+          <span style="font-size:12px;color:#334155;display:block;">${escapeHtml(info.address)}</span>
+          <span style="font-size:11px;color:#64748b;display:block;margin-top:4px;margin-bottom:8px;">${escapeHtml(info.category)} · ${escapeHtml(info.priceRange)}</span>
+          <a href="${safeExternalUrl(info.googleMapsUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#B95347;color:#ffffff;font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;text-decoration:none;">Abrir ubicación en Maps</a>
         </div>`
       )
       .openPopup();
@@ -71,7 +84,7 @@ export function LocationMap({ info }: LocationMapProps) {
   };
 
   return (
-    <div className="relative flex h-full min-h-[360px] w-full flex-col overflow-hidden rounded-xl border border-[#D6E2E5] bg-white shadow-sm">
+    <div className="relative isolate z-0 flex h-full min-h-[360px] w-full flex-col overflow-hidden rounded-xl border border-[#D6E2E5] bg-white shadow-sm">
       <div
         ref={mapContainerRef}
         aria-label={`Mapa interactivo de ${info.name} en ${info.address}`}

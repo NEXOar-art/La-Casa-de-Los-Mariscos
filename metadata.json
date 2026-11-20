@@ -1,0 +1,6 @@
+{
+  "name": "Marea Austral — Marisquería Moderna",
+  "description": "Landing page profesional para marisquería moderna con animaciones Three.js, galería editorial, carta interactiva con buscador y carrito por WhatsApp, reservas y panel administrador.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

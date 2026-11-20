@@ -1,0 +1,222 @@
+import { FormEvent, useState } from 'react';
+import { Lock, Settings, X } from 'lucide-react';
+import { RestaurantInfo } from '../data/restaurantData';
+
+interface AdminModalProps {
+  open: boolean;
+  isAdmin: boolean;
+  info: RestaurantInfo;
+  onClose: () => void;
+  onUnlock: () => void;
+  onUpdateInfo: (next: RestaurantInfo) => void;
+}
+
+export function AdminModal({
+  open,
+  isAdmin,
+  info,
+  onClose,
+  onUnlock,
+  onUpdateInfo,
+}: AdminModalProps) {
+  const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
+  const [formInfo, setFormInfo] = useState<RestaurantInfo>(info);
+  const [savedNotice, setSavedNotice] = useState(false);
+
+  if (!open) return null;
+
+  const handlePinSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (pin.trim() === '0608') {
+      setError('');
+      setPin('');
+      onUnlock();
+      setFormInfo(info);
+    } else {
+      setError('Clave incorrecta. Intentá nuevamente.');
+    }
+  };
+
+  const handleInfoSave = (e: FormEvent) => {
+    e.preventDefault();
+    onUpdateInfo(formInfo);
+    setSavedNotice(true);
+    window.setTimeout(() => setSavedNotice(false), 2000);
+  };
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Panel Administrador"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#1F2A33]/60 p-4"
+    >
+      <div className="w-full max-w-md rounded-xl border border-[#E5D8D2] bg-[#FBF8F5] p-6 text-[#1F2A33] shadow-2xl">
+        <div className="flex items-center justify-between border-b border-[#E5D8D2] pb-3.5">
+          <div className="flex items-center gap-2">
+            {isAdmin ? (
+              <Settings className="h-5 w-5 text-[#B95347]" aria-hidden="true" />
+            ) : (
+              <Lock className="h-5 w-5 text-[#B95347]" aria-hidden="true" />
+            )}
+            <h2 className="font-display text-xl font-semibold">
+              {isAdmin ? 'Datos del Restaurante' : 'Acceso Administrador'}
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Cerrar panel administrador"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#DECFC8] text-[#52606D] hover:border-[#B95347] hover:text-[#1F2A33] cursor-pointer"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {!isAdmin ? (
+          <form onSubmit={handlePinSubmit} className="mt-5 space-y-4">
+            <p className="text-sm text-[#52606D]">
+              Ingresá la clave de administrador para editar precios de La Carta y
+              configurar los datos de contacto del local.
+            </p>
+            <div>
+              <label
+                htmlFor="admin-pin"
+                className="mb-1.5 block text-xs font-semibold text-[#334155]"
+              >
+                Clave de acceso
+              </label>
+              <input
+                id="admin-pin"
+                type="password"
+                inputMode="numeric"
+                autoFocus
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                placeholder="••••"
+                className="w-full rounded-lg border border-[#DECFC8] bg-white px-3.5 py-2.5 font-mono-num text-base tracking-widest text-[#1F2A33] focus:border-[#B95347] focus:outline-none"
+              />
+            </div>
+
+            {error && (
+              <p role="alert" className="text-xs font-semibold text-[#B91C1C]">
+                {error}
+              </p>
+            )}
+
+            <div className="flex justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg border border-[#DECFC8] bg-white px-4 py-2 text-xs font-medium text-[#52606D] hover:text-[#1F2A33] cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="rounded-lg bg-[#B95347] px-5 py-2 text-xs font-semibold text-white hover:bg-[#9E4237] cursor-pointer"
+              >
+                Ingresar
+              </button>
+            </div>
+          </form>
+        ) : (
+          <form onSubmit={handleInfoSave} className="mt-5 space-y-3.5">
+            <p className="text-xs text-[#52606D]">
+              Los precios se editan directamente sobre cada plato en La Carta.
+              Aquí podés actualizar el nombre, WhatsApp y ubicación del local.
+            </p>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-[#334155]">
+                Nombre del local
+              </label>
+              <input
+                type="text"
+                value={formInfo.name}
+                onChange={(e) =>
+                  setFormInfo({ ...formInfo, name: e.target.value })
+                }
+                className="w-full rounded-lg border border-[#DECFC8] bg-white px-3 py-2 text-sm text-[#1F2A33] focus:border-[#B95347] focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-[#334155]">
+                WhatsApp (código país + número, sin +)
+              </label>
+              <input
+                type="text"
+                value={formInfo.whatsappNumber}
+                onChange={(e) =>
+                  setFormInfo({ ...formInfo, whatsappNumber: e.target.value })
+                }
+                className="w-full rounded-lg border border-[#DECFC8] bg-white px-3 py-2 font-mono-num text-sm text-[#1F2A33] focus:border-[#B95347] focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-[#334155]">
+                Dirección
+              </label>
+              <input
+                type="text"
+                value={formInfo.address}
+                onChange={(e) =>
+                  setFormInfo({ ...formInfo, address: e.target.value })
+                }
+                className="w-full rounded-lg border border-[#DECFC8] bg-white px-3 py-2 text-sm text-[#1F2A33] focus:border-[#B95347] focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-[#334155]">
+                Instagram (@usuario)
+              </label>
+              <input
+                type="text"
+                value={formInfo.instagramHandle}
+                onChange={(e) =>
+                  setFormInfo({ ...formInfo, instagramHandle: e.target.value })
+                }
+                className="w-full rounded-lg border border-[#DECFC8] bg-white px-3 py-2 text-sm text-[#1F2A33] focus:border-[#B95347] focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-[#334155]">
+                Horarios
+              </label>
+              <input
+                type="text"
+                value={formInfo.hours}
+                onChange={(e) =>
+                  setFormInfo({ ...formInfo, hours: e.target.value })
+                }
+                className="w-full rounded-lg border border-[#DECFC8] bg-white px-3 py-2 text-sm text-[#1F2A33] focus:border-[#B95347] focus:outline-none"
+              />
+            </div>
+
+            {savedNotice && (
+              <p className="text-xs font-semibold text-[#1D7A5F]">
+                Datos guardados correctamente.
+              </p>
+            )}
+
+            <div className="flex justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg border border-[#DECFC8] bg-white px-4 py-2 text-xs font-medium text-[#52606D] cursor-pointer"
+              >
+                Cerrar
+              </button>
+              <button
+                type="submit"
+                className="rounded-lg bg-[#B95347] px-5 py-2 text-xs font-semibold text-white hover:bg-[#9E4237] cursor-pointer"
+              >
+                Guardar datos
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
